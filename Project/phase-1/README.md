@@ -104,7 +104,7 @@ Pointers and references both let us work with data indirectly, but they behave d
 
 In our matrix code we used pointers for dynamic buffers and when we needed to pass or allocate large arrays. References are nicer for small parameters (like a tolerance) when we don’t need to change what’s referenced.
 
----
+
 
 ### 2. Row- vs. Column-Major Order
 Row-major stores rows contiguously; column-major stores columns contiguously.
@@ -112,7 +112,7 @@ Row-major stores rows contiguously; column-major stores columns contiguously.
 * In our matrix-vector multiply, row-major allowed each inner loop to read sequential memory, which matched cache lines and ran roughly twice as fast as a column-major version.  
 * In matrix-matrix multiply, the naive `i-j-k` order hit B’s columns with big strides, causing extra cache misses. Transposing B first made those accesses contiguous and cut runtime by about **20 %** in our benchmarks.
 
----
+
 
 ### 3. CPU Caches and Locality
 Modern CPUs have small, fast **L1** caches per core, larger but slower **L2**, and a shared **L3**. Data moves in 64-byte cache lines.
@@ -122,23 +122,29 @@ Modern CPUs have small, fast **L1** caches per core, larger but slower **L2**, a
 
 We tried to exploit both. **Loop-reordering (ikj)** keeps `A[i][k]` in cache while scanning across `j`, and **tiling (64×64 blocks)** reuses sub-matrices so they stay in L1. Profiling showed noticeably fewer cache misses and around **30 %** speedups.
 
----
+
 
 ### 4. Memory Alignment
 Alignment places data on addresses that match cache-line or hardware word boundaries (e.g., 64 bytes). Misaligned data can span two lines and require extra loads.  
 
 We used **64-byte–aligned allocations** for our matrices; it avoided split loads and gave a small but repeatable performance bump—about **10–15 %** on the larger 1024×1024 runs.
 
----
+
 
 ### 5. Compiler Optimizations
 Inlining removes function call overhead and may expose vectorization.At -O3, compiler already inlined and vectorized aggressively.-O3 was ~10× faster than -O0.
 
----
+
 
 ### 6. Profiling and Bottlenecks
 
----
+In our first-pass implementations the main bottleneck was the memory hierarchy, not the floating-point arithmetic. Profiling with our std::chrono benchmarks showed that access patterns dominated runtime: for matrix–vector, the row-major version (contiguous reads of `A[i,*]`) consistently beat the column-major version, and the gap grew with rows (e.g., ~14% → ~36% from 1,024 to 16,384 rows). That pointed to poor spatial locality and more cache/TLB misses in the column-major walk. For matrix–matrix, the naive kernel suffered because it reads `B[* ,j]` with a large stride in the inner loop; timing confirmed it was slower than the variant using transposed B, which turns both inner streams into contiguous reads and yielded about 1.4–1.5× speedups at the same sizes.
+
+These results guided us to focus on data layout and loop order rather than micro-tuning arithmetic: 
+* prefer loop nests that read contiguous rows
+* precompute Bᵀ and compute `C[i,j] = Σ_k A[i,k] * Bᵀ[j,k]`
+* make small locality-friendly tweaks (e.g., hoist `vector[j]` into a register inside MV).
+We intentionally kept more aggressive techniques (tiling/blocking, explicit SIMD, alignment) for later phases, since the profiling made clear that fixing locality delivered the biggest wins.
 
 ### 7. Teamwork Reflection
 We first worked together to complete the initial implementation. After that, each member focused on a different part of the analysis and optimization. In the end, we gathered our results and discussed the findings as a group.
