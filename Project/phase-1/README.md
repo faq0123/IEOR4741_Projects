@@ -80,7 +80,7 @@ Pointers and references both let us work with data indirectly, but they behave d
 
 - Syntax & Lifetime: References use normal “dot” access and are typically optimized away. Pointers need * or -> and must be freed if they own dynamic memory.
 
-In our matrix code we used pointers for dynamic buffers and when we needed to pass or allocate large arrays. References are nicer for small parameters (like a tolerance) when we don’t need to change what’s referenced.
+    In our matrix code we used pointers for dynamic buffers and when we needed to pass or allocate large arrays. References are nicer for small parameters (like a tolerance) when we don’t need to change what’s referenced.
 
 2. Row- vs. Column-Major Order
 Row-major stores rows contiguously; column-major stores columns contiguously.
@@ -96,7 +96,7 @@ Modern CPUs have small, fast L1 caches per core, larger but slower L2, and a sha
 
 - Spatial locality means touching nearby data that came in with the same cache line.
 
-We tried to exploit both. Loop-reordering (ikj) keeps A[i][k] in cache while scanning across j, and tiling (processing 64×64 blocks) reuses sub-matrices so they stay in L1. Profiling showed noticeably fewer cache misses and around 30 % speedups.
+    We tried to exploit both. Loop-reordering (ikj) keeps A[i][k] in cache while scanning across j, and tiling (processing 64×64 blocks) reuses sub-matrices so they stay in L1. Profiling showed noticeably fewer cache misses and around 30 % speedups.
 
 4. Memory Alignment
 Alignment places data on addresses that match cache-line or hardware word boundaries (e.g., 64-byte). Misaligned data can span two lines and require extra loads. We used 64-byte–aligned allocations for our matrices; it avoided split loads and gave a small but repeatable performance bump—about 10–15 % on the larger 1024×1024 runs.
