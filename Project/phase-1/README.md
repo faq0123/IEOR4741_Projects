@@ -128,15 +128,23 @@ Alignment places data on addresses that match cache-line or hardware word bounda
 
 We used **64-byte–aligned allocations** for our matrices; it avoided split loads and gave a small but repeatable performance bump—about **10–15 %** on the larger 1024×1024 runs.
 
+---
+
 ### 5. Compiler Optimizations
 Inlining removes function call overhead and may expose vectorization.At -O3, compiler already inlined and vectorized aggressively.-O3 was ~10× faster than -O0.
 
+---
+
 ### 6. Profiling and Bottlenecks
+
+---
 
 ### 7. Teamwork Reflection
 We first worked together to complete the initial implementation. After that, each member focused on a different part of the analysis and optimization. In the end, we gathered our results and discussed the findings as a group.
 
 The main benefit of this approach was efficiency, since we could work in parallel and learn from each other’s insights. The main challenges were consolidating the code into one and coordinating with teammates to compare and explain our individual results.
+
+---
 
 ## Acknowledgements
 Assignment spec from IEOR 4741. All additional code and benchmarking scripts by the team listed above.
