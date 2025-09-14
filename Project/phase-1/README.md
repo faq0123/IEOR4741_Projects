@@ -24,7 +24,7 @@ of their implementations using benchmarking and profiling tools.
   ├── linalg_utils.hpp / linalg_utils.cpp
   │   # Helpers: transpose_row_major, row_to_col_major, fillers, checksum, etc.
   ├── baseline_main.cpp
-      # Simple test cases for each function to verify its correctness.
+      # Simple golden test and cross-impl cases for each function to verify its correctness.
   # Part 2: Performance Analysis and Optimization
       # Task 1: Benchmarking
   ├── bench.hpp / bench.cpp            
@@ -49,7 +49,7 @@ Suggested targets and their *Compile Sources*:
   `kernels.cpp`, `linalg_utils.cpp`, `bench.cpp`, `bench_main.cpp`
 - **`part2 - task2 - locality`**  
   `kernels.cpp`, `linalg_utils.cpp`, `bench.cpp`, `cache_locality_main.cpp`
-- **`part3&4 - task2 - locality`** 
+- **`part2 - task3&4 - locality`** 
   `align_inline.cpp`
 
 Build configuration: **Release** (`-O3 -DNDEBUG`). Optional: `-march=native`.
@@ -71,14 +71,11 @@ clang++ -std=c++17 -O3 -DNDEBUG kernels.cpp linalg_utils.cpp bench.cpp cache_loc
 
 # Part 3 – alignment
 clang++ -std=gnu++14 -O3 align_inline.cpp -o bench
-./bench
-./bench --unaligned
 
 # Part 4 – inline
 clang++ -std=gnu++14 -O3 align_inline.cpp -o bench_O3
-./bench_O3
 clang++ -std=gnu++14 -O0 align_inline.cpp -o bench_O0
-./bench_O0
+
 
 ```
 
@@ -87,6 +84,10 @@ Run and optionally save CSV:
 ./part1_tests
 ./bench_main         > bench.csv
 ./cache_locality     > locality.csv
+./bench
+./bench --unaligned
+./bench_O3
+./bench_O0
 ```
 
 ## Discussion Questions 
