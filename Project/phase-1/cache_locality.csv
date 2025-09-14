@@ -1,0 +1,14 @@
+scenario,kernel,rows,cols,mean_ms,stdev_ms
+mv_rowsweep,mv_row,1024,256,1.62195,0.107172
+mv_rowsweep,mv_col,1024,256,1.84334,0.152718
+mv_rowsweep,mv_row,4096,256,6.27182,0.0935599
+mv_rowsweep,mv_col,4096,256,7.5961,0.176565
+mv_rowsweep,mv_row,16384,256,24.9437,0.141811
+mv_rowsweep,mv_col,16384,256,33.9192,0.428845
+scenario,stride_doubles,mean_ns_per_elem,stdev_ns_per_elem
+stride_bench,1,9.84736e+06,68111.1
+stride_bench,2,9.87708e+06,47333
+stride_bench,4,9.43298e+06,77674.3
+stride_bench,8,9.68995e+06,62731.5
+stride_bench,16,9.78473e+06,113290
+stride_bench,32,9.95784e+06,142133
