@@ -71,39 +71,43 @@ Run and optionally save CSV:
 
 ## Discussion Questions 
 
-1. Pointers vs. References
+### 1. Pointers vs. References
+Pointers and references both let us work with data indirectly, but they behave differently.  
 
-Pointers and references both let us work with data indirectly, but they behave differently.
+* **Initialization & Reassignment:**  
+  A reference must be bound when created and can’t later refer to something else, while a pointer can be reassigned or set to `nullptr`.  
+* **Nullability & Arithmetic:**  
+  References can’t be null and don’t support arithmetic; pointers can be null and allow pointer math, which is useful for array traversal.  
+* **Syntax & Lifetime:**  
+  References use normal “dot” access and are typically optimized away. Pointers need `*` or `->` and must be freed if they own dynamic memory.  
 
-- Initialization & Reassignment: A reference must be bound when created and can’t later refer to something else, while a pointer can be reassigned or set to nullptr.
+In our matrix code we used pointers for dynamic buffers and when we needed to pass or allocate large arrays. References are nicer for small parameters (like a tolerance) when we don’t need to change what’s referenced.
 
-- Nullability & Arithmetic: References can’t be null and don’t support arithmetic; pointers can be null and allow pointer math, which is useful for array traversal.
+---
 
-- Syntax & Lifetime: References use normal “dot” access and are typically optimized away. Pointers need * or -> and must be freed if they own dynamic memory.
-
-    In our matrix code we used pointers for dynamic buffers and when we needed to pass or allocate large arrays. References are nicer for small parameters (like a tolerance) when we don’t need to change what’s referenced.
-
-2. Row- vs. Column-Major Order
-
+### 2. Row- vs. Column-Major Order
 Row-major stores rows contiguously; column-major stores columns contiguously.
 
-- In our matrix-vector multiply, row-major allowed each inner loop to read sequential memory, which matched cache lines and ran roughly twice as fast as a column-major version.
+* In our matrix-vector multiply, row-major allowed each inner loop to read sequential memory, which matched cache lines and ran roughly twice as fast as a column-major version.  
+* In matrix-matrix multiply, the naive `i-j-k` order hit B’s columns with big strides, causing extra cache misses. Transposing B first made those accesses contiguous and cut runtime by about **20 %** in our benchmarks.
 
-- In matrix-matrix multiply, the naive i-j-k order hit B’s columns with big strides, causing extra cache misses. Transposing B first made those accesses contiguous and cut runtime by about 20 % in our benchmarks.
+---
 
-3. CPU Caches and Locality
+### 3. CPU Caches and Locality
+Modern CPUs have small, fast **L1** caches per core, larger but slower **L2**, and a shared **L3**. Data moves in 64-byte cache lines.
 
-Modern CPUs have small, fast L1 caches per core, larger but slower L2, and a shared L3. Data moves in 64-byte cache lines.
+* **Temporal locality** means reusing the same data soon after it’s fetched.  
+* **Spatial locality** means touching nearby data that came in with the same cache line.  
 
-- Temporal locality means reusing the same data soon after it’s fetched.
+We tried to exploit both. **Loop-reordering (ikj)** keeps `A[i][k]` in cache while scanning across `j`, and **tiling (64×64 blocks)** reuses sub-matrices so they stay in L1. Profiling showed noticeably fewer cache misses and around **30 %** speedups.
 
-- Spatial locality means touching nearby data that came in with the same cache line.
+---
 
-    We tried to exploit both. Loop-reordering (ikj) keeps A[i][k] in cache while scanning across j, and tiling (processing 64×64 blocks) reuses sub-matrices so they stay in L1. Profiling showed noticeably fewer cache misses and around 30 % speedups.
+### 4. Memory Alignment
+Alignment places data on addresses that match cache-line or hardware word boundaries (e.g., 64 bytes). Misaligned data can span two lines and require extra loads.  
 
-4. Memory Alignment
+We used **64-byte–aligned allocations** for our matrices; it avoided split loads and gave a small but repeatable performance bump—about **10–15 %** on the larger 1024×1024 runs.
 
-Alignment places data on addresses that match cache-line or hardware word boundaries (e.g., 64-byte). Misaligned data can span two lines and require extra loads. We used 64-byte–aligned allocations for our matrices; it avoided split loads and gave a small but repeatable performance bump—about 10–15 % on the larger 1024×1024 runs.
 
 ## Acknowledgements
 Assignment spec from IEOR 4741. All additional code and benchmarking scripts by the team listed above.
