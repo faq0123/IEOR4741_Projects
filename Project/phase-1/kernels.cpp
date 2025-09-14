@@ -161,3 +161,85 @@ void multiply_mm_transposed_b(const double* matrixA, int rowsA, int colsA,
         }
     }
 }
+
+// Loop-reordered (i-k-j) matrix multiplication.
+// Reorders loops to stream through B rows contiguously while accumulating into C row segments.
+void multiply_mm_loop_reordered(const double* matrixA, int rowsA, int colsA,
+                                const double* matrixB, int rowsB, int colsB,
+                                double* result) {
+    if (!matrixA || !matrixB || !result) {
+        std::cerr << "[Error] Null pointer passed to multiply_mm_loop_reordered.\n";
+        return;
+    }
+    if (rowsA <= 0 || colsA <= 0 || rowsB <= 0 || colsB <= 0) {
+        std::cerr << "[Error] Invalid matrix dimensions.\n";
+        return;
+    }
+    if (colsA != rowsB) {
+        std::cerr << "[Error] Incompatible dimensions: A(" << rowsA << "x" << colsA
+                  << ") * B(" << rowsB << "x" << colsB << ").\n";
+        return;
+    }
+
+    const size_t nC = static_cast<size_t>(rowsA) * static_cast<size_t>(colsB);
+    memset(result, 0, sizeof(double) * nC);
+
+    // i-k-j ordering: keep A(i,k) in a register, walk across row segment of C and row of B
+    for (int i = 0; i < rowsA; ++i) {
+        const double* Ai = matrixA + static_cast<size_t>(i) * colsA;
+        double* Ci = result + static_cast<size_t>(i) * colsB;
+        for (int k = 0; k < colsA; ++k) {
+            const double a = Ai[k];         // A(i,k)
+            const double* Bk = matrixB + static_cast<size_t>(k) * colsB; // row k of B
+            for (int j = 0; j < colsB; ++j) {
+                Ci[j] += a * Bk[j];
+            }
+        }
+    }
+}
+
+// Blocked / tiled matrix multiplication (row-major matrices)
+// Splits the i, k, j loops into tiles of size block_size to increase cache reuse.
+void multiply_mm_tiled(const double* matrixA, int rowsA, int colsA,
+                       const double* matrixB, int rowsB, int colsB,
+                       double* result, int block_size) {
+    if (!matrixA || !matrixB || !result) {
+        std::cerr << "[Error] Null pointer passed to multiply_mm_tiled.\n";
+        return;
+    }
+    if (rowsA <= 0 || colsA <= 0 || rowsB <= 0 || colsB <= 0 || block_size <= 0) {
+        std::cerr << "[Error] Invalid matrix dimensions or block size.\n";
+        return;
+    }
+    if (colsA != rowsB) {
+        std::cerr << "[Error] Incompatible dimensions: A(" << rowsA << "x" << colsA
+                  << ") * B(" << rowsB << "x" << colsB << ").\n";
+        return;
+    }
+
+    const size_t nC = static_cast<size_t>(rowsA) * static_cast<size_t>(colsB);
+    memset(result, 0, sizeof(double) * nC);
+
+    // Tile loops: I,K,J outer; inner micro-kernel updates a block of C
+    for (int ii = 0; ii < rowsA; ii += block_size) {
+        int i_max = std::min(ii + block_size, rowsA);
+        for (int kk = 0; kk < colsA; kk += block_size) {
+            int k_max = std::min(kk + block_size, colsA);
+            for (int jj = 0; jj < colsB; jj += block_size) {
+                int j_max = std::min(jj + block_size, colsB);
+                // Compute C block (ii:i_max, jj:j_max)
+                for (int i = ii; i < i_max; ++i) {
+                    const double* Ai = matrixA + static_cast<size_t>(i) * colsA;
+                    double* Ci = result + static_cast<size_t>(i) * colsB;
+                    for (int k = kk; k < k_max; ++k) {
+                        const double a = Ai[k];
+                        const double* Bk = matrixB + static_cast<size_t>(k) * colsB;
+                        for (int j = jj; j < j_max; ++j) {
+                            Ci[j] += a * Bk[j];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

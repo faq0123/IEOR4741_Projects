@@ -1,4 +1,4 @@
-#include "lin_alg.h"
+#include "kernels.hpp"
 #include <chrono>
 #include <vector>
 #include <iostream>
@@ -126,8 +126,8 @@ int main() {
 
         auto mm_naive = benchmark_mm(multiply_mm_naive, size, size, size);
         auto mm_trans = benchmark_mm(multiply_mm_transposed_b, size, size, size);
-        auto mm_tiled = benchmark_mm_tiled(multiply_mm_tiled, size, size, size);
-        auto mm_loop = benchmark_mm(multiply_mm_loop_reordered, size, size, size);
+    auto mm_tiled = benchmark_mm_tiled(multiply_mm_tiled, size, size, size);
+    auto mm_loop = benchmark_mm(multiply_mm_loop_reordered, size, size, size);
         std::cout << std::setw(10) << size << std::setw(20) << "MM Naive" 
                   << std::setw(15) << mm_naive.avg_time_ms << std::setw(15) << mm_naive.std_dev_ms << std::endl;
         std::cout << std::setw(10) << size << std::setw(20) << "MM Transposed B" 
