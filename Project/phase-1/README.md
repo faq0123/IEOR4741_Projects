@@ -23,7 +23,7 @@ of their implementations using benchmarking and profiling tools.
   │   #  multiply_mm_naive / multiply_mm_transposed_b
   ├── linalg_utils.hpp / linalg_utils.cpp
   │   # Helpers: transpose_row_major, row_to_col_major, fillers, checksum, etc.
-  ├── test_main.cpp
+  ├── baseline_main.cpp
       # Simple test cases for each function to verify its correctness.
   # Part 2: Performance Analysis and Optimization
       # Task 1: Benchmarking
