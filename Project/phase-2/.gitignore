@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# C++
+*.out
+*.o
+*.exe
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
