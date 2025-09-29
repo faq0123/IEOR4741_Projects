@@ -1,0 +1,29 @@
+[Market] Best Bid: 100.12 x 300
+[Market] Best Ask: 100.2 x 250
+[Market] Best Bid: 100.15 x 200
+[Market] Best Ask: 100.18 x 100
+[Market] Best Ask: 100.18 x 60
+[Market] Best Bid: 100.15 removed
+[Market] Best Ask: 100.18 x 30
+[Market] Best Bid: 100.12 removed
+[Market] No more bids
+[Market] Best Ask: 100.18 removed 
+[Market] Best Ask: 100.2 removed 
+[Market] No more asks
+[Market] Best Ask: 100.25 x 100
+[Market] Best Bid: 100.14 x 250
+[Strategy] Placing SELL order at 100.14 x 50 (ID = 1)
+[Market] Best Ask: 100.21 x 200
+[Order] Order 1 partially filled: 10/50
+[Order] Order 1 partially filled: 30/50
+[Market] Best Bid: 100.16 x 150
+[Market] Best Bid: 100.18 x 200
+[Market] Best Ask: 100.2 x 250
+[Strategy] Placing BUY order at 100.2 x 50 (ID = 2)
+[Order] Order 2 partially filled: 40/50
+[Market] Best Bid: 100.18 x 100
+[Order] Order 2 fully filled (50/50) and removed
+[Market] Best Bid: 100.2 x 300
+---- Trading Session End ----
+Active Orders:
+Order 1: SELL 50 @ 100.14 (Filled: 30, Status: Partially Filled)
