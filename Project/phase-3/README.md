@@ -63,3 +63,6 @@ make clean
 ```
 
 ---
+
+## Acknowledgements
+Assignment spec from IEOR 4741. Completed by the team listed.
