@@ -1,0 +1,5 @@
+/Users/wdecddr/Desktop/cpp_programming/phrase4/build/CMakeFiles/hft_app.dir
+/Users/wdecddr/Desktop/cpp_programming/phrase4/build/CMakeFiles/test_latency.dir
+/Users/wdecddr/Desktop/cpp_programming/phrase4/build/CMakeFiles/test.dir
+/Users/wdecddr/Desktop/cpp_programming/phrase4/build/CMakeFiles/edit_cache.dir
+/Users/wdecddr/Desktop/cpp_programming/phrase4/build/CMakeFiles/rebuild_cache.dir
