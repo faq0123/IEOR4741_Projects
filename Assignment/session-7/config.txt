@@ -1,0 +1,5 @@
+market_data_rate=10000
+strategy_threshold=2.0
+simulation_seconds=10
+verbose_logging=false
+num_strategy_threads=5

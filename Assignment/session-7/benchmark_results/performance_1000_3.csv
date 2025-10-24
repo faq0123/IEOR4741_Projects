@@ -1,0 +1,9 @@
+Metric,Value
+Duration(s),10.009
+TotalOrders,5232
+Throughput(orders/s),522.73
+AvgLatency(us),31.4742
+MinLatency(us),4
+MaxLatency(us),7676
+MarketDataRate,1000
+StrategyThreads,3
